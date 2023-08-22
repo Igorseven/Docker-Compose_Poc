@@ -1,0 +1,57 @@
+name: dockercompose13391546125229432431
+services:
+  customerbase.api:
+    build:
+      context: C:\Users\Igor Seven\Documents\Net7\Docker_Poc\Customer
+      dockerfile: CustomerBase.API/Dockerfile
+    container_name: customer-api-container
+    depends_on:
+      sqldata:
+        condition: service_started
+        required: true
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: https://+:443;http://+:80
+    image: customerbaseapi
+    networks:
+      default: null
+    ports:
+    - mode: ingress
+      target: 80
+      protocol: tcp
+    - mode: ingress
+      target: 80
+      published: "8081"
+      protocol: tcp
+    - mode: ingress
+      target: 443
+      protocol: tcp
+    volumes:
+    - type: bind
+      source: C:\Users\Igor Seven\AppData\Roaming/Microsoft/UserSecrets
+      target: /root/.microsoft/usersecrets
+      read_only: true
+      bind:
+        create_host_path: true
+    - type: bind
+      source: C:\Users\Igor Seven\AppData\Roaming/ASP.NET/Https
+      target: /root/.aspnet/https
+      read_only: true
+      bind:
+        create_host_path: true
+  sqldata:
+    container_name: mssql-container
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: Customer@2023
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    networks:
+      default: null
+    ports:
+    - mode: ingress
+      target: 1433
+      published: "1450"
+      protocol: tcp
+networks:
+  default:
+    name: dockercompose13391546125229432431_default
